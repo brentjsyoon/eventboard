@@ -1,0 +1,45 @@
+.form {
+  display: none;
+  flex-direction: column;
+}
+
+.formActive {
+  display: flex;
+}
+
+.label {
+  margin-bottom: 0.2rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.input {
+  padding: 0.5rem;
+  margin-bottom: 1rem;
+  border: 1.5px solid #ff6f61;
+  border-radius: 4px;
+  font-size: 1rem;
+  font-family: inherit;
+}
+
+.input:focus {
+  outline: none;
+  border-color: #ff4b47;
+  box-shadow: 0 0 5px #ff4b47;
+}
+
+.submitButton {
+  background: #ff6f61;
+  color: white;
+  border: none;
+  padding: 0.6rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: bold;
+  transition: background-color 0.2s ease;
+}
+
+.submitButton:hover {
+  background: #ff4b47;
+}

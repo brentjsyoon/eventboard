@@ -1,0 +1,58 @@
+.header {
+  background: #ff6f61;
+  color: white;
+  padding: 1rem;
+  
+  /* Flex container */
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.title {
+  font-size: 3rem;
+  margin: 0;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.logo {
+    width: 50px;
+    height: auto;
+    vertical-align: middle;
+    position: relative;
+    top: -8px;
+    margin: 12px;
+}
+
+.actions {
+  margin-left: auto;
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  font-size: 1.1rem;
+  position: static;
+}
+
+.actions button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: inherit;
+  height: 42px;
+  min-width: 150px;
+  transform: translateY(-3px);
+}
+
+.createEventBtn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 12px;
+}
+
+.eventIcon {
+  width: 30px;
+  height: auto;
+  margin: 0; 
+}

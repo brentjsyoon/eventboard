@@ -1,0 +1,11 @@
+.events-list {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.events-list h2 {
+  margin-bottom: 1rem;
+  text-align: center;
+  color: #ff6f61;
+}

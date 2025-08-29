@@ -1,0 +1,26 @@
+.header {
+  background: #ff6f61;
+  color: white;
+  padding: 1rem;
+  
+  /* Flex container */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.title {
+  font-size: 3rem;
+  margin: 0;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.logo {
+    width: 50px;
+    height: auto;
+    vertical-align: middle;
+    position: relative;
+    top: -8px;
+    margin: 12px;
+}
