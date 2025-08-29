@@ -6,7 +6,7 @@ const cors = require('cors');
 const PORT = process.env.PORT || 3000;
 
 const app = express();
-app.use(cors()); // dev only
+app.use(cors({ origin: process.env.CLIENT_URL, credentials: true }));
 app.use(express.json());
 
 // Middleware to protect APIs
@@ -22,22 +22,16 @@ function authenticateToken(req, res, next) {
   });
 }
 
-// Serve frontend
-app.use(express.static(path.join(__dirname, '../eventboard-fe')));
-
-// Public landing page
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, '../eventboard-fe/index.html'));
+app.get("/profile", authenticateToken, (req, res) => {
+  res.json({
+    message: "This is protected data",
+    user: req.user, // decoded JWT payload from auth server
+  });
 });
 
-// Dashboard page (unprotected)
-app.get('/dashboard', (req, res) => {
-  res.sendFile(path.join(__dirname, '../eventboard-fe/dashboard.html'));
-});
-
-// Protected API
-app.get('/api/profile', authenticateToken, (req, res) => {
-  res.json({ message: 'Protected profile data', user: req.user });
+// Example public route
+app.get("/", (req, res) => {
+  res.send("Public endpoint — no token required");
 });
 
 app.listen(PORT, () => console.log(`Resource server running on port ${PORT}`));
