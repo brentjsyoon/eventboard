@@ -7,16 +7,58 @@ import styles from "./AuthContainer.module.css";
 const AuthContainer: React.FC = () => {
 
     const [activeTab, setActiveTab] = useState<"login" | "signup">("login");
+    const [message, setMessage] = useState("");
+
+    const handleLogin = async (data: { email: string; password: string }) => {
+        try {
+        const res = await fetch(`${import.meta.env.VITE_AUTH_SERVER}/login`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data),
+        });
+
+        if (!res.ok) throw new Error("Login failed");
+        const { accessToken, refreshToken } = await res.json();
+
+        // store tokens in localStorage (or cookies if you want more security)
+        localStorage.setItem("accessToken", accessToken);
+        localStorage.setItem("refreshToken", refreshToken);
+
+        setMessage("✅ Logged in!");
+        } catch (err) {
+        console.error(err);
+        setMessage("❌ Login failed");
+        }
+    };
+
+    const handleSignup = async (data: { fullName: string; email: string; password: string }) => {
+        try {
+        const res = await fetch(`${import.meta.env.VITE_AUTH_SERVER}/users`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data),
+        });
+
+        if (!res.ok) throw new Error("Signup failed");
+        setMessage("✅ Signup successful! Please log in.");
+        setActiveTab("login");
+        } catch (err) {
+        console.error(err);
+        setMessage("❌ Signup failed");
+        }
+    };
 
     return (
         <div className={styles.container}>
-            <Tabs activeTab={activeTab} onTabChange={setActiveTab} />
+        <Tabs activeTab={activeTab} onTabChange={setActiveTab} />
 
-            {activeTab === "login" ? (
-                <LoginForm onSubmit={(data) => console.log("login", data)} />
-            ) : (
-                <SignUpForm onSubmit={(data) => console.log("signup", data)} />
-            )}
+        {activeTab === "login" ? (
+            <LoginForm onSubmit={handleLogin} />
+        ) : (
+            <SignUpForm onSubmit={handleSignup} />
+        )}
+
+        {message && <p>{message}</p>}
         </div>
     );
 };
