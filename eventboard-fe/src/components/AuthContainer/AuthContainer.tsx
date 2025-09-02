@@ -11,40 +11,39 @@ const AuthContainer: React.FC = () => {
 
     const handleLogin = async (data: { email: string; password: string }) => {
         try {
-        const res = await fetch(`${import.meta.env.VITE_AUTH_SERVER}/login`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(data),
-        });
+            const res = await fetch(`${import.meta.env.VITE_AUTH_SERVER}/login`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data),
+            });
 
-        if (!res.ok) throw new Error("Login failed");
-        const { accessToken, refreshToken } = await res.json();
+            if (!res.ok) throw new Error("Login failed");
+            const { accessToken, refreshToken } = await res.json();
 
-        // store tokens in localStorage (or cookies if you want more security)
-        localStorage.setItem("accessToken", accessToken);
-        localStorage.setItem("refreshToken", refreshToken);
+            // store tokens in localStorage (or cookies if you want more security)
+            localStorage.setItem("accessToken", accessToken);
+            localStorage.setItem("refreshToken", refreshToken);
 
-        setMessage("✅ Logged in!");
+            setMessage("✅ Logged in!");
         } catch (err) {
-        console.error(err);
-        setMessage("❌ Login failed");
+            console.error(err);
+            setMessage("❌ Login failed");
         }
     };
 
     const handleSignup = async (data: { fullName: string; email: string; password: string }) => {
         try {
-        const res = await fetch(`${import.meta.env.VITE_AUTH_SERVER}/users`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(data),
-        });
+            const res = await fetch(`${import.meta.env.VITE_AUTH_SERVER}/users`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data),
+            });
 
-        if (!res.ok) throw new Error("Signup failed");
-        setMessage("✅ Signup successful! Please log in.");
-        setActiveTab("login");
+            if (!res.ok) throw new Error("Signup failed");
+            setActiveTab("login");
         } catch (err) {
-        console.error(err);
-        setMessage("❌ Signup failed");
+            console.error(err);
+            setMessage("❌ Signup failed");
         }
     };
 

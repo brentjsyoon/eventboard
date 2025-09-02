@@ -28,6 +28,40 @@
   box-shadow: 0 0 5px #ff4b47;
 }
 
+.inputWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.inputWrapper .input {
+  width: 100%;
+  padding-right: 40px; /* space for the eye */
+  box-sizing: border-box;
+}
+
+.eyeButton {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-90%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  line-height: 0;
+}
+
+.eyeIcon {
+  width: 20px;
+  height: 20px;
+  display: block;
+}
+
 .submitButton {
   background: #ff6f61;
   color: white;
