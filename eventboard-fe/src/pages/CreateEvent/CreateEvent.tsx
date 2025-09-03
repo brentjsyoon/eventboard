@@ -1,10 +1,12 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const API_URL = import.meta.env.VITE_RESOURCE_SERVER;
 
 console.log("API_URL:", API_URL);
 
 const CreateEvent: React.FC = () => {
+  const navigate = useNavigate();
   const [title, setTitle] = useState("");
   const [date, setDate] = useState("");
   const [location, setLocation] = useState("");
@@ -12,37 +14,32 @@ const CreateEvent: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     const token = localStorage.getItem("accessToken");
 
     try {
-      const response = await fetch(`${API_URL}/events`, {
+      const res = await fetch(`${API_URL}/events`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({
-          title,
-          date,
-          location,
-          description,
-        }),
+        body: JSON.stringify({ title, date, location, description }),
       });
 
-      if (response.ok) {
-        alert("✅ Event created!");
-        setTitle("");
-        setDate("");
-        setLocation("");
-        setDescription("");
-      } else {
-        const msg = await response.text();
-        alert("❌ Failed to create event: " + msg);
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error || "Failed to create event");
       }
-    } catch (err) {
+
+      // Clear form & redirect
+      setTitle("");
+      setDate("");
+      setLocation("");
+      setDescription("");
+      navigate("/"); // go to home
+    } catch (err: any) {
       console.error(err);
-      alert("⚠️ Something went wrong.");
+      alert(`❌ Failed to create event: ${err.message}`);
     }
   };
 

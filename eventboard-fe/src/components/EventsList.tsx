@@ -19,7 +19,7 @@ const EventsList: React.FC = () => {
         const fetchEvents = async () => {
             try {
                 const token = localStorage.getItem("accessToken");
-                const res = await fetch(`${process.env.VITE_RESOURCE_SERVER}/events`, {
+                const res = await fetch(`${import.meta.env.VITE_RESOURCE_SERVER}/events`, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
