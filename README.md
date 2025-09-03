@@ -18,14 +18,14 @@ It features **React + TypeScript + Vite** on the frontend and an **Express + Mon
 ## 🛠 Tech Stack
 
 **Frontend**  
-- Vercel for deployment
+- [Vercel](https://vercel.com/) for deployment
 - [React](https://react.dev/) + [TypeScript](https://www.typescriptlang.org/)  
 - [Vite](https://vitejs.dev/) for fast dev build & HMR  
 - [React Router](https://reactrouter.com/) for routing  
 - CSS Modules for component-scoped styling  
 
 **Backend**  
-- Render for server deployment
+- [Render](https://render.com/) for server deployment
 - [Express](https://expressjs.com/) REST API  
 - [MongoDB](https://www.mongodb.com/) with Mongoose  
 - [jsonwebtoken](https://github.com/auth0/node-jsonwebtoken) for authentication  
