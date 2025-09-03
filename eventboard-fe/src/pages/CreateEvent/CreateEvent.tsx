@@ -1,9 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import styles from "./CreateEvent.module.css"; // Import CSS module
 
 const API_URL = import.meta.env.VITE_RESOURCE_SERVER;
-
-console.log("API_URL:", API_URL);
 
 const CreateEvent: React.FC = () => {
   const navigate = useNavigate();
@@ -31,12 +30,11 @@ const CreateEvent: React.FC = () => {
         throw new Error(errorData.error || "Failed to create event");
       }
 
-      // Clear form & redirect
       setTitle("");
       setDate("");
       setLocation("");
       setDescription("");
-      navigate("/"); // go to home
+      navigate("/");
     } catch (err: any) {
       console.error(err);
       alert(`❌ Failed to create event: ${err.message}`);
@@ -44,12 +42,13 @@ const CreateEvent: React.FC = () => {
   };
 
   return (
-    <div style={{ maxWidth: "500px", margin: "2rem auto" }}>
-      <h2>Create New Event</h2>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>Title</label>
+    <div className={styles.container}>
+      <h2 className={styles.title}>Create New Event</h2>
+      <form className={styles.form} onSubmit={handleSubmit}>
+        <div className={styles.formGroup}>
+          <label className={styles.label}>Title</label>
           <input
+            className={styles.input}
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
@@ -57,9 +56,10 @@ const CreateEvent: React.FC = () => {
           />
         </div>
 
-        <div>
-          <label>Date</label>
+        <div className={styles.formGroup}>
+          <label className={styles.label}>Date</label>
           <input
+            className={styles.input}
             type="date"
             value={date}
             onChange={(e) => setDate(e.target.value)}
@@ -67,9 +67,10 @@ const CreateEvent: React.FC = () => {
           />
         </div>
 
-        <div>
-          <label>Location</label>
+        <div className={styles.formGroup}>
+          <label className={styles.label}>Location</label>
           <input
+            className={styles.input}
             type="text"
             value={location}
             onChange={(e) => setLocation(e.target.value)}
@@ -77,15 +78,18 @@ const CreateEvent: React.FC = () => {
           />
         </div>
 
-        <div>
-          <label>Description</label>
+        <div className={styles.formGroup}>
+          <label className={styles.label}>Description</label>
           <textarea
+            className={`${styles.input} ${styles.textarea}`}
             value={description}
             onChange={(e) => setDescription(e.target.value)}
           />
         </div>
 
-        <button type="submit">Create Event</button>
+        <button type="submit" className={styles.createEventBtn}>
+          <span className={styles.eventIcon}>🗓️</span> Create Event
+        </button>
       </form>
     </div>
   );
