@@ -5,6 +5,8 @@ import Events from "./pages/Events/Events";
 import Contact from "./pages/Contact/Contact";
 import Login from "./pages/Login/Login";
 import Profile from "./components/Profile/Profile";
+import CreateEvent from "./pages/CreateEvent/CreateEvent";
+
 const App: React.FC = () => {
 
   return (
@@ -15,6 +17,7 @@ const App: React.FC = () => {
         <Route path="/contact" element={<Contact />} />
         <Route path="/login" element={<Login />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/create-event" element={<CreateEvent />} />
       </Routes>
     </BrowserRouter>
   );

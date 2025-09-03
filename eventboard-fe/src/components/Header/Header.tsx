@@ -52,7 +52,7 @@ const Header: React.FC = () => {
                             if (!accessToken) {
                                 navigate("/login");
                             } else {
-                            navigate("");
+                            navigate("/create-event");
                             }
                 }}>
                     <img className={styles.eventIcon} src="./images/event.png" alt="event creation icon" />
