@@ -1,0 +1,68 @@
+
+.container {
+  max-width: 600px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+.header {
+  background: #ff6f61;
+  color: white;
+  padding: 1rem;
+  
+  /* Flex container */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.title {
+  font-size: 3rem;
+  margin: 0;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.logo {
+    width: 50px;
+    height: auto;
+    vertical-align: middle;
+    position: relative;
+    top: -8px;
+    margin: 12px;
+}
+
+.card {
+  background: #ffe5e0; /* light coral tone for consistency */
+  padding: 1.5rem;
+  border-radius: 8px;
+  margin-bottom: 2rem;
+  text-align: left;
+  font-size: 1.1rem;
+  color: #333;
+}
+
+.logoutBtn {
+  background: #ff6f61;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.logoutBtn:hover {
+  background: #e65a50; /* slightly darker coral */
+}
+
+.message {
+  text-align: center;
+  font-size: 1.2rem;
+  margin-top: 2rem;
+  color: #555;
+}

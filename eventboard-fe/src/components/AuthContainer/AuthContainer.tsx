@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom"; 
 import Tabs from "../Tabs/Tabs";
 import LoginForm from "../LoginForm/LoginForm";
 import SignUpForm from "../SignUpForm/SignUpForm";
@@ -8,6 +9,7 @@ const AuthContainer: React.FC = () => {
 
     const [activeTab, setActiveTab] = useState<"login" | "signup">("login");
     const [message, setMessage] = useState("");
+    const navigate = useNavigate();
 
     const handleLogin = async (data: { email: string; password: string }) => {
         try {
@@ -24,7 +26,7 @@ const AuthContainer: React.FC = () => {
             localStorage.setItem("accessToken", accessToken);
             localStorage.setItem("refreshToken", refreshToken);
 
-            setMessage("✅ Logged in!");
+            navigate("/");
         } catch (err) {
             console.error(err);
             setMessage("❌ Login failed");

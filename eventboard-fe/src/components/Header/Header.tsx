@@ -7,7 +7,15 @@ import styles from "./Header.module.css";
 const Header: React.FC = () => {
 
     const navigate = useNavigate();
-    
+    const accessToken = localStorage.getItem("accessToken");
+
+    const handleLogout = () => {
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
+        navigate("/");
+        window.location.reload();
+    };
+
     return (
         <header className={styles.header}>
             <h1 className={styles.title}>
@@ -17,12 +25,36 @@ const Header: React.FC = () => {
                     <img className={styles.logo} src="/images/logo.png" alt="logo cactus" title="Timmy" />
                 </Link>
             </h1>
+
             <Navbar />
+
             <div className={styles.actions}>
-                <Button variant="secondary" size="md" onClick={() => navigate("/login")}>
-                    Login / Create Account
-                </Button>
-                <Button className={styles.createEventBtn} variant="secondary" size="md">
+                {!accessToken ? (
+                    // If NOT logged in -> show Login / Create Account
+                    <Button variant="secondary" size="md" onClick={() => navigate("/login")}>
+                        Login / Create Account
+                    </Button>
+                ) : (
+                    // If logged in → show Profile + Logout
+                    <>
+                        <Button variant="secondary" size="md" onClick={() => navigate("/profile")}>
+                            Profile
+                        </Button>
+
+                        <Button className={styles.createEventBtn} variant="secondary" size="md" onClick={handleLogout}>
+                            Logout
+                        </Button>
+                    </>
+                )}
+
+                <Button className={styles.createEventBtn} variant="secondary" size="md"
+                        onClick={() => {
+                            if (!accessToken) {
+                                navigate("/login");
+                            } else {
+                            navigate("");
+                            }
+                }}>
                     <img className={styles.eventIcon} src="./images/event.png" alt="event creation icon" />
                     Create New Event
                 </Button>
