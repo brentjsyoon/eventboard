@@ -123,10 +123,4 @@ app.delete("/logout", async (req, res) => {
   }
 });
 
-app._router.stack.forEach(m => {
-  if (m.route) {
-    console.log(m.route.path);
-  }
-});
-
 app.listen(PORT, () => console.log(`Auth server running on port ${PORT}`));
