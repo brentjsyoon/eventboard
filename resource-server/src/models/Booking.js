@@ -1,9 +1,9 @@
-import mongoose from "mongoose";
+const mongoose = require("mongoose");
 
 const bookingSchema = new mongoose.Schema({
-    event: { type: mongoose.Schema.Types.ObjectId, ref: "Event", required: true },
-    user: { type: String, required: true }, // can also store user ID/email
-    seats: { type: Number, default: 1 }, // optional
-}, { timestamps: true });
+  event: { type: mongoose.Schema.Types.ObjectId, ref: "Event" },
+  user: String,
+  seats: Number,
+});
 
-export default mongoose.model("Booking", bookingSchema);
+module.exports = mongoose.model("Booking", bookingSchema);
