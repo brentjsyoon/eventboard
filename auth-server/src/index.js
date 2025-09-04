@@ -6,6 +6,8 @@ const cors = require("cors");
 const connectDB = require("./db");
 const User = require("./models/User");
 
+console.log("Allowed CORS origin:", process.env.CLIENT_URL);
+
 const PORT = process.env.PORT || 4000;
 const app = express();
 
@@ -13,7 +15,7 @@ const app = express();
 connectDB();
 
 // Middleware
-app.use(cors({ origin: process.env.CLIENT_URL || "http://localhost:3000" }));
+app.use(cors({ origin: process.env.CLIENT_URL, credentials: true }));
 app.use(express.json());
 
 // --- Generate JWT ---
