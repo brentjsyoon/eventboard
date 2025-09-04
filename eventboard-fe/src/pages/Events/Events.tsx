@@ -13,7 +13,7 @@ const Events: React.FC = () => {
             <Header />
             <SearchBar onSearch={setSearchQuery}/>
             <h2>All Events</h2>
-            <EventsList searchQuery={searchQuery} limit={4} />
+            <EventsList searchQuery={searchQuery} />
             <Footer />
         </div>
     );

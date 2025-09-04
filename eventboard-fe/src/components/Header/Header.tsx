@@ -31,11 +31,23 @@ const Header: React.FC = () => {
                 ) : (
                     // If logged in → show Profile + Logout
                     <>
-                        <Button variant="secondary" size="md" onClick={() => navigate("/profile")}>
+                        <Button 
+                            style={{ padding: "4px 12px", minWidth: "auto" }}
+                            variant="secondary"
+                            size="md"
+                            onClick={() => navigate("/profile")}
+                        >
                             Profile
                         </Button>
 
-                        <Button className={styles.createEventBtn} variant="secondary" size="md" onClick={logout}>
+                        <Button
+                            style={{ padding: "4px 12px", minWidth: "auto" }}
+                            variant="secondary" size="md" 
+                            onClick={() => {
+                                logout();
+                                navigate("/");
+                            }}
+                        >
                             Logout
                         </Button>
                     </>

@@ -46,7 +46,7 @@ const EventCard: React.FC<EventCardProps> = ({
 
             if (!res.ok) throw new Error("Booking failed");
 
-            alert("Booking successful!");
+            window.location.reload();
         } catch (err) {
             console.error(err);
             alert("Booking failed");
@@ -65,6 +65,7 @@ const EventCard: React.FC<EventCardProps> = ({
                     Book Now
                 </Button>
             )}
+            {booked && <p style={{ color: "green" }}>Already booked</p>}
         </div>
     );
 };

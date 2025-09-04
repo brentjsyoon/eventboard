@@ -6,6 +6,7 @@ import Contact from "./pages/Contact/Contact";
 import Login from "./pages/Login/Login";
 import Profile from "./components/Profile/Profile";
 import CreateEvent from "./pages/CreateEvent/CreateEvent";
+import MyBookings from "./pages/MyBookings/MyBookings";
 
 const App: React.FC = () => {
 
@@ -15,6 +16,7 @@ const App: React.FC = () => {
         <Route path="/" element={<Home />} />
         <Route path="/events" element={<Events />} />
         <Route path="/contact" element={<Contact />} />
+        <Route path="/mybookings" element={<MyBookings />} />
         <Route path="/login" element={<Login />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/create-event" element={<CreateEvent />} />
