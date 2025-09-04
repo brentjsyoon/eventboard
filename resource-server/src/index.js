@@ -11,24 +11,25 @@ const app = express();
 
 connectDB();
 
-console.log("CLIENT_URL:", process.env.CLIENT_URL);
-
-// --- CORS Middleware ---
+const allowedOrigins = [
+  process.env.CLIENT_URL,
+  "http://localhost:5173"
+];
 app.use(cors({
-   origin: process.env.CLIENT_URL,        // must match your frontend exactly
-  credentials: true,         // allow cookies / auth headers
-  allowedHeaders: ["Content-Type", "Authorization"],
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
-}));
-
-// --- Handle preflight OPTIONS requests ---
-app.options("*", cors({
-  origin: process.env.CLIENT_URL,
+  origin: function (origin, callback) {
+    console.log("Request Origin:", origin);
+    if (!origin || origin === allowedOrigins.includes(origin)) {
+      console.log("✅ Allowed by CORS:", origin);
+      callback(null, true);
+    } else {
+      console.log("❌ Blocked by CORS:", origin);
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
   credentials: true,
   allowedHeaders: ["Content-Type", "Authorization"],
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
 }));
-
 app.use(express.json());
 
 
@@ -43,12 +44,6 @@ app.get("/profile", authenticateToken, (req, res) => {
     message: "This is protected data",
     user: req.user,
   });
-});
-
-app._router.stack.forEach(m => {
-  if (m.route) {
-    console.log(m.route.path);
-  }
 });
 
 app.use("/events", eventRoutes);
