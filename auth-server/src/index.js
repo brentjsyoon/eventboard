@@ -12,19 +12,24 @@ const app = express();
 // Connect DB
 connectDB();
 
+const allowedOrigins = [
+  process.env.CLIENT_URL,
+  "http://localhost:5173"
+];
 app.use(cors({
-  origin: process.env.CLIENT_URL, // exact frontend URL
-  credentials: true,               // allow cookies / auth headers
-  allowedHeaders: ["Content-Type", "Authorization"],
-  methods: ["GET","POST","PUT","DELETE","OPTIONS"]
-}));
-
-// Optional: handle preflight
-app.options("*", cors({
-  origin: process.env.CLIENT_URL,
+  origin: function (origin, callback) {
+    console.log("Request Origin:", origin);
+    if (!origin || origin === allowedOrigins.includes(origin)) {
+      console.log("✅ Allowed by CORS:", origin);
+      callback(null, true);
+    } else {
+      console.log("❌ Blocked by CORS:", origin);
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
   credentials: true,
   allowedHeaders: ["Content-Type", "Authorization"],
-  methods: ["GET","POST","PUT","DELETE","OPTIONS"]
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
 }));
 
 app.use(express.json());
