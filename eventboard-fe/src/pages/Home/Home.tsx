@@ -1,6 +1,4 @@
-import React from "react";
 import Header from "../../components/Header/Header";
-import SearchBar from "../../components/SearchBar/SearchBar";
 import EventsList from "../../components/EventsList";
 import Footer from "../../components/Footer";
 import "../../index.css";
@@ -11,8 +9,8 @@ const Home: React.FC = () => {
     <div>
       <Header />
       <main>
-        <SearchBar />
-        <EventsList />
+        <h2>Upcoming Events</h2>
+        <EventsList limit={4} />
       </main>
       <Footer />
     </div>

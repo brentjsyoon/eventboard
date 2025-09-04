@@ -12,6 +12,13 @@ body {
   padding: 0;
 }
 
+h2 {
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+  text-align: center;
+  color: #ff6f61;
+}
+
 nav {
   font-size: 1.3rem;
   margin-top: 0;

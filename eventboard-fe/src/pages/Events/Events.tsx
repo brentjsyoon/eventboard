@@ -1,13 +1,19 @@
-import React from "react";
+import React, { useState } from "react";
 import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer";
+import EventsList from "../../components/EventsList";
+import SearchBar from "../../components/SearchBar/SearchBar";
 
 const Events: React.FC = () => {
+
+    const [searchQuery, setSearchQuery] = useState("");
 
     return (
         <div>
             <Header />
-            <h1>Events Page</h1>
+            <SearchBar onSearch={setSearchQuery}/>
+            <h2>All Events</h2>
+            <EventsList searchQuery={searchQuery} limit={4} />
             <Footer />
         </div>
     );

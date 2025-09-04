@@ -10,7 +10,12 @@ type EventType = {
     description: string;
 };
 
-const EventsList: React.FC = () => {
+interface EventsListProps {
+  limit?: number;
+  searchQuery?: string;
+}
+
+const EventsList: React.FC<EventsListProps> = ({ limit, searchQuery = "" }) => {
 
     const [events, setEvents] = useState<EventType[]>([]);
     const [loading, setLoading] = useState(true);
@@ -18,13 +23,8 @@ const EventsList: React.FC = () => {
     useEffect(() => {
         const fetchEvents = async () => {
             try {
-                const token = localStorage.getItem("accessToken");
-                const res = await fetch(`${import.meta.env.VITE_RESOURCE_SERVER}/events`, {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                });
-
+                const res = await fetch(`${import.meta.env.VITE_RESOURCE_SERVER}/events`);
+                
                 if (!res.ok) throw new Error("Failed to fetch events");
 
                 const data = await res.json();
@@ -39,7 +39,15 @@ const EventsList: React.FC = () => {
         fetchEvents();
     }, []);
 
-    const sortedEvents = events.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+    const filteredEvents = events.filter((event) =>
+        event.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        event.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        event.location.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
+    const sortedEvents = filteredEvents.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+    const eventsToShow = limit ? sortedEvents.slice(0, limit) : sortedEvents;
 
     if (loading) {
         return <p>Loading events...</p>;
@@ -47,11 +55,10 @@ const EventsList: React.FC = () => {
 
     return (
         <section className="events-list">
-            <h2>Upcoming Events</h2>
-            {sortedEvents.length === 0 ? (
-                <p>No events available</p>
+            {eventsToShow.length === 0 ? (
+                <p>No results found for query</p>
             ) : (
-                sortedEvents.map((event) => (
+                eventsToShow.map((event) => (
                     <EventCard
                         key={event._id}
                         title={event.title}
