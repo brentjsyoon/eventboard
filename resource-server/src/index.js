@@ -6,14 +6,27 @@ const authenticateToken = require('./middleware/authenticateToken');
 const eventRoutes = require('./routes/events');
 const bookingRoutes =require('./routes/bookings');
 
-console.log("Allowed CORS origin:", process.env.CLIENT_URL);
-
 const PORT = process.env.PORT || 3000;
 const app = express();
 
 connectDB();
 
-app.use(cors({ origin: process.env.CLIENT_URL, credentials: true }));
+// --- CORS Middleware ---
+app.use(cors({
+  origin: CLIENT_URL,        // must match your frontend exactly
+  credentials: true,         // allow cookies / auth headers
+  allowedHeaders: ["Content-Type", "Authorization"],
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
+}));
+
+// --- Handle preflight OPTIONS requests ---
+app.options("*", cors({
+  origin: CLIENT_URL,
+  credentials: true,
+  allowedHeaders: ["Content-Type", "Authorization"],
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
+}));
+
 app.use(express.json());
 
 

@@ -5,12 +5,6 @@ import "../../index.css";
 
 const Home: React.FC = () => {
 
-  const AUTH_SERVER = import.meta.env.VITE_AUTH_SERVER;
-  const RESOURCE_SERVER = import.meta.env.VITE_RESOURCE_SERVER;
-
-  console.log("Auth Server:", AUTH_SERVER);
-  console.log("Resource Server:", RESOURCE_SERVER);
-
   return (
     <div>
       <Header />

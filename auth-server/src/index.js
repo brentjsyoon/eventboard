@@ -6,16 +6,27 @@ const cors = require("cors");
 const connectDB = require("./db");
 const User = require("./models/User");
 
-console.log("Allowed CORS origin:", process.env.CLIENT_URL);
-
 const PORT = process.env.PORT || 4000;
 const app = express();
 
 // Connect DB
 connectDB();
 
-// Middleware
-app.use(cors({ origin: process.env.CLIENT_URL, credentials: true }));
+app.use(cors({
+  origin: process.env.CLIENT_URL, // exact frontend URL
+  credentials: true,               // allow cookies / auth headers
+  allowedHeaders: ["Content-Type", "Authorization"],
+  methods: ["GET","POST","PUT","DELETE","OPTIONS"]
+}));
+
+// Optional: handle preflight
+app.options("*", cors({
+  origin: process.env.CLIENT_URL,
+  credentials: true,
+  allowedHeaders: ["Content-Type", "Authorization"],
+  methods: ["GET","POST","PUT","DELETE","OPTIONS"]
+}));
+
 app.use(express.json());
 
 // --- Generate JWT ---
