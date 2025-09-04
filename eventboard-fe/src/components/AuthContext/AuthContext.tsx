@@ -1,4 +1,4 @@
-import React, { createContext, useState, useEffect } from "react";
+import React, { createContext, useState } from "react";
 import { jwtDecode } from "jwt-decode";
 
 interface AuthState {
@@ -17,31 +17,26 @@ export const AuthContext = createContext<{
     logout: () => {}
 });
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const [auth, setAuth] = useState<AuthState>({
-        accessToken: localStorage.getItem("accessToken"),
-        isAuthenticated: false,
-        user: null
-    });
+const getInitialAuth = (): AuthState => {
+    const token = localStorage.getItem("accessToken");
+    if (!token) return { accessToken: null, isAuthenticated: false, user: null };
 
-    useEffect(() => {
-        if (auth.accessToken) {
-            try {
-                const decoded: any = jwtDecode(auth.accessToken);
-                if (decoded.exp * 1000 > Date.now()) {
-                    setAuth({
-                        accessToken: auth.accessToken,
-                        isAuthenticated: true,
-                        user: decoded
-                    });
-                } else {
-                    logout();
-                }
-            } catch {
-                logout();
-            }
+    try {
+        const decoded: any = jwtDecode(token);
+        if (decoded.exp * 1000 > Date.now()) {
+            return { accessToken: token, isAuthenticated: true, user: decoded };
+        } else {
+            localStorage.removeItem("accessToken");
+            return { accessToken: null, isAuthenticated: false, user: null };
         }
-    }, []);
+    } catch {
+        localStorage.removeItem("accessToken");
+        return { accessToken: null, isAuthenticated: false, user: null };
+    }
+};
+
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+    const [auth, setAuth] = useState<AuthState>(getInitialAuth);
 
     const login = (token: string) => {
         localStorage.setItem("accessToken", token);
