@@ -13,7 +13,7 @@ connectDB();
 
 // --- CORS Middleware ---
 app.use(cors({
-  origin: CLIENT_URL,        // must match your frontend exactly
+   origin: process.env.CLIENT_URL,        // must match your frontend exactly
   credentials: true,         // allow cookies / auth headers
   allowedHeaders: ["Content-Type", "Authorization"],
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
@@ -21,7 +21,7 @@ app.use(cors({
 
 // --- Handle preflight OPTIONS requests ---
 app.options("*", cors({
-  origin: CLIENT_URL,
+  origin: process.env.CLIENT_URL,
   credentials: true,
   allowedHeaders: ["Content-Type", "Authorization"],
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
