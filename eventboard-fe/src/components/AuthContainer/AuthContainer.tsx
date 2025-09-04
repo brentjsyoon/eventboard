@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom"; 
 import Tabs from "../Tabs/Tabs";
 import LoginForm from "../LoginForm/LoginForm";
 import SignUpForm from "../SignUpForm/SignUpForm";
+import { AuthContext } from "../AuthContext/AuthContext";
 import styles from "./AuthContainer.module.css";
 
 const AuthContainer: React.FC = () => {
@@ -10,6 +11,7 @@ const AuthContainer: React.FC = () => {
     const [activeTab, setActiveTab] = useState<"login" | "signup">("login");
     const [message, setMessage] = useState("");
     const navigate = useNavigate();
+    const { login } = useContext(AuthContext); 
 
     const handleLogin = async (data: { email: string; password: string }) => {
         try {
@@ -23,8 +25,9 @@ const AuthContainer: React.FC = () => {
             const { accessToken, refreshToken } = await res.json();
 
             // store tokens in localStorage (or cookies if you want more security)
-            localStorage.setItem("accessToken", accessToken);
             localStorage.setItem("refreshToken", refreshToken);
+
+            login(accessToken);
 
             navigate("/");
         } catch (err) {

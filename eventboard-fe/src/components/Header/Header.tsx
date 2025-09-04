@@ -1,20 +1,14 @@
-import React from "react";
+import React, { useContext } from "react";
 import Button from "../Button";
 import Navbar from "../Navbar";
 import { Link, useNavigate } from "react-router-dom";
+import { AuthContext } from "../AuthContext/AuthContext";
 import styles from "./Header.module.css";
 
 const Header: React.FC = () => {
 
     const navigate = useNavigate();
-    const accessToken = localStorage.getItem("accessToken");
-
-    const handleLogout = () => {
-        localStorage.removeItem("accessToken");
-        localStorage.removeItem("refreshToken");
-        navigate("/");
-        window.location.reload();
-    };
+    const { auth, logout } = useContext(AuthContext);
 
     return (
         <header className={styles.header}>
@@ -29,7 +23,7 @@ const Header: React.FC = () => {
             <Navbar />
 
             <div className={styles.actions}>
-                {!accessToken ? (
+                {!auth.isAuthenticated ? (
                     // If NOT logged in -> show Login / Create Account
                     <Button variant="secondary" size="md" onClick={() => navigate("/login")}>
                         Login / Create Account
@@ -41,7 +35,7 @@ const Header: React.FC = () => {
                             Profile
                         </Button>
 
-                        <Button className={styles.createEventBtn} variant="secondary" size="md" onClick={handleLogout}>
+                        <Button className={styles.createEventBtn} variant="secondary" size="md" onClick={logout}>
                             Logout
                         </Button>
                     </>
@@ -49,7 +43,7 @@ const Header: React.FC = () => {
 
                 <Button className={styles.createEventBtn} variant="secondary" size="md"
                         onClick={() => {
-                            if (!accessToken) {
+                            if (!auth.isAuthenticated) {
                                 navigate("/login");
                             } else {
                             navigate("/create-event");
