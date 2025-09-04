@@ -43,6 +43,11 @@ app.get("/profile", authenticateToken, (req, res) => {
   });
 });
 
+app._router.stack.forEach(m => {
+  if (m.route) {
+    console.log(m.route.path);
+  }
+});
 
 app.use("/events", eventRoutes);
 
