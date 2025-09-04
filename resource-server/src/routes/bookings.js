@@ -1,6 +1,6 @@
-import express from "express";
-import Booking from "../models/Booking";
-import authenticateToken from "../middleware/authenticateToken";
+const express = require("express");
+const Booking = require("../models/Booking");
+const authenticateToken = require("../middleware/authenticateToken");
 
 const router = express.Router();
 
@@ -32,4 +32,4 @@ router.get("/", authenticateToken, async (req, res) => {
     }
 });
 
-export default router;
+module.exports = router;
