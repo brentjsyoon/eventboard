@@ -27,6 +27,8 @@ app.options("*", cors({
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
 }));
 
+console.log("CLIENT_URL:", process.env.CLIENT_URL);
+
 app.use(express.json());
 
 
