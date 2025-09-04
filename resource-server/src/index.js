@@ -4,6 +4,7 @@ const cors = require('cors');
 const connectDB = require('./db');
 const authenticateToken = require('./middleware/authenticateToken');
 const eventRoutes = require('./routes/events');
+const bookingRoutes =require('./routes/bookings');
 
 const PORT = process.env.PORT || 3000;
 const app = express();
@@ -29,6 +30,8 @@ app.get("/profile", authenticateToken, (req, res) => {
 
 
 app.use("/events", eventRoutes);
+
+app.use("/bookings", bookingRoutes);
 
 app.use((req, res) => {
   res.status(404).json({ error: "Route not found" });
