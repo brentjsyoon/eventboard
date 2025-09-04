@@ -3,6 +3,8 @@ import Button from "../Button";
 import Navbar from "../Navbar";
 import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../AuthContext/AuthContext";
+import userIcon from "../../assets/icons/user.png";
+import eventIcon from "../../assets/icons/event.png";
 import styles from "./Header.module.css";
 
 const Header: React.FC = () => {
@@ -37,6 +39,7 @@ const Header: React.FC = () => {
                             size="md"
                             onClick={() => navigate("/profile")}
                         >
+                            <img className={styles.userIcon} src={userIcon} alt="user profile icon" />
                             Profile
                         </Button>
 
@@ -61,7 +64,7 @@ const Header: React.FC = () => {
                             navigate("/create-event");
                             }
                 }}>
-                    <img className={styles.eventIcon} src="./images/event.png" alt="event creation icon" />
+                    <img className={styles.eventIcon} src={eventIcon} alt="event creation icon" />
                     Create New Event
                 </Button>
             </div>

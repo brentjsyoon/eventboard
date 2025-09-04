@@ -56,3 +56,9 @@
   height: auto;
   margin: 0; 
 }
+
+.userIcon {
+  width: 25px;
+  height: auto;
+  margin-right: 6px; 
+}

@@ -30,7 +30,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSubmit }) => {
     }
 
     setError("");
-    onSubmit({ fullName, email, password });
+    onSubmit({ fullName, email: email.toLowerCase(), password });
   };
 
   return (
