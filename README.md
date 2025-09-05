@@ -3,6 +3,8 @@
 EventBoard is a full-stack web application for creating, managing, and browsing events.  
 It features **React + TypeScript + Vite** on the frontend and an **Express + MongoDB + JWT authentication** backend.
 
+EventBoard Deployment URL: https://eventboard-six.vercel.app/
+
 ---
 
 ## ✨ Features
