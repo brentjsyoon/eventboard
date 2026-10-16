@@ -9,6 +9,20 @@ const bookingRoutes =require('./routes/bookings');
 const PORT = process.env.PORT || 3000;
 const app = express();
 
+app.get("/health", (req, res) => {
+  res.status(200).json({ status: "ok" });
+});
+
+const https = require("https");
+
+https.get("https://checkip.amazonaws.com", (res) => {
+  let ip = "";
+  res.on("data", (chunk) => ip += chunk);
+  res.on("end", () => console.log("🌐 ECS outbound IP:", ip.trim()));
+}).on("error", (err) => {
+  console.error("Outbound IP check failed:", err.message);
+});
+
 connectDB();
 
 const allowedOrigins = [
