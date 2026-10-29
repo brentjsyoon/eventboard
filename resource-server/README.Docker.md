@@ -1,6 +1,7 @@
 ### Building and running your application
 
-When you're ready, start your application by running:
+Create `resource-server/.env` from `.env.example` and set `MONGO_URI`,
+`ACCESS_TOKEN_SECRET`, and `CLIENT_URL` before starting the service:
 `docker compose up --build`.
 
 Your application will be available at http://localhost:4000.

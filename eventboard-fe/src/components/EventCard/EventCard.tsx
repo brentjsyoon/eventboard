@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import Button from "../Button";
-import { AuthContext } from "../AuthContext/AuthContext";
+import { AuthContext } from "../AuthContext/AuthContextValue";
 import styles from "./EventCard.module.css";
 
 type EventCardProps = {

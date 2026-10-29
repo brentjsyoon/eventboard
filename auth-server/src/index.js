@@ -3,119 +3,182 @@ const express = require("express");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const cors = require("cors");
+const cookieParser = require("cookie-parser");
+const { rateLimit } = require("express-rate-limit");
+const crypto = require("crypto");
 const connectDB = require("./db");
 const User = require("./models/User");
 
 const PORT = process.env.PORT || 4000;
 const app = express();
+const REFRESH_TOKEN_TTL = 7 * 24 * 60 * 60 * 1000;
+const refreshCookieOptions = {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === "production",
+  sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+  path: "/",
+  maxAge: REFRESH_TOKEN_TTL,
+};
 
-// Connect DB
+if (
+  !process.env.MONGO_URI ||
+  !process.env.ACCESS_TOKEN_SECRET ||
+  !process.env.REFRESH_TOKEN_SECRET ||
+  !process.env.CLIENT_URL
+) {
+  throw new Error("MONGO_URI, ACCESS_TOKEN_SECRET, REFRESH_TOKEN_SECRET, and CLIENT_URL must be configured");
+}
+if (process.env.ACCESS_TOKEN_SECRET === process.env.REFRESH_TOKEN_SECRET) {
+  throw new Error("Access and refresh token secrets must be different");
+}
+
 connectDB();
 
 const allowedOrigins = [
   process.env.CLIENT_URL,
   "http://localhost:5173"
-];
+].filter(Boolean);
+app.set("trust proxy", 1);
 app.use(cors({
   origin: function (origin, callback) {
-    console.log("Request Origin:", origin);
-    if (!origin || allowedOrigins.includes(origin)) {
-      console.log("✅ Allowed by CORS:", origin);
-      callback(null, true);
-    } else {
-      console.log("❌ Blocked by CORS:", origin);
-      callback(new Error("Not allowed by CORS"));
-    }
+    if (!origin || allowedOrigins.includes(origin)) return callback(null, true);
+    callback(new Error("Not allowed by CORS"));
   },
   credentials: true,
   allowedHeaders: ["Content-Type", "Authorization"],
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
 }));
 
-app.use(express.json());
+app.use(express.json({ limit: "10kb" }));
+app.use(cookieParser());
 
-// --- Generate JWT ---
+const authRateLimit = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 10,
+  standardHeaders: "draft-8",
+  legacyHeaders: false,
+});
+const tokenDigest = (token) => crypto.createHash("sha256").update(token).digest("hex");
+const requireAllowedOrigin = (req, res, next) => {
+  const origin = req.get("origin");
+  if (origin && !allowedOrigins.includes(origin)) return res.sendStatus(403);
+  next();
+};
+
 function generateAccessToken(user) {
   return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "15m" });
 }
 
-// --- Signup ---
-app.post("/users", async (req, res) => {
-  try {
-    const { fullName, email, password } = req.body;
+function generateRefreshToken(user) {
+  return jwt.sign(user, process.env.REFRESH_TOKEN_SECRET, {
+    expiresIn: "7d",
+    jwtid: crypto.randomUUID(),
+  });
+}
 
-    const existingUser = await User.findOne({ email });
-    if (existingUser) return res.status(400).send("User already exists");
+app.post("/users", authRateLimit, async (req, res) => {
+  try {
+    const { fullName, email, password } = req.body || {};
+    if (
+      typeof fullName !== "string" || !fullName.trim() || fullName.trim().length > 120 ||
+      typeof email !== "string" || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim()) ||
+      typeof password !== "string" || password.length < 8 || Buffer.byteLength(password, "utf8") > 72
+    ) {
+      return res.status(400).json({ error: "Provide a valid name, email, and password (8-72 bytes)" });
+    }
+
+    const normalizedEmail = email.trim().toLowerCase();
+    const existingUser = await User.findOne({ email: normalizedEmail });
+    if (existingUser) return res.status(409).json({ error: "User already exists" });
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    const newUser = new User({ fullName, email, password: hashedPassword });
+    const newUser = new User({ fullName: fullName.trim(), email: normalizedEmail, password: hashedPassword });
 
     await newUser.save();
-    res.status(201).send("User created");
+    res.status(201).json({ message: "User created" });
   } catch (err) {
+    if (err.code === 11000) return res.status(409).json({ error: "User already exists" });
     console.error(err);
-    res.status(500).send("Internal server error");
+    res.status(500).json({ error: "Internal server error" });
   }
 });
 
-// --- Login ---
-app.post("/login", async (req, res) => {
+app.post("/login", authRateLimit, async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { email, password } = req.body || {};
+    if (typeof email !== "string" || typeof password !== "string") {
+      return res.status(400).json({ error: "Email and password are required" });
+    }
 
-    const user = await User.findOne({ email });
-    if (!user) return res.status(400).send("Cannot find user");
+    const user = await User.findOne({ email: email.trim().toLowerCase() });
+    if (!user) return res.status(401).json({ error: "Invalid email or password" });
 
     const match = await bcrypt.compare(password, user.password);
-    if (!match) return res.status(403).send("Incorrect password");
+    if (!match) return res.status(401).json({ error: "Invalid email or password" });
 
     const payload = { fullName: user.fullName, email: user.email };
     const accessToken = generateAccessToken(payload);
-    const refreshToken = jwt.sign(payload, process.env.REFRESH_TOKEN_SECRET);
+    const refreshToken = generateRefreshToken(payload);
 
-    user.refreshTokens.push(refreshToken);
+    user.refreshTokens = user.refreshTokens.filter((token) => /^[a-f\d]{64}$/i.test(token));
+    user.refreshTokens.push(tokenDigest(refreshToken));
     await user.save();
 
-    res.json({ accessToken, refreshToken });
+    res.cookie("refreshToken", refreshToken, refreshCookieOptions);
+    res.json({ accessToken });
   } catch (err) {
     console.error(err);
-    res.status(500).send("Internal server error");
+    res.status(500).json({ error: "Internal server error" });
   }
 });
 
-// --- Token Refresh ---
-app.post("/token", async (req, res) => {
-  const { token: refreshToken } = req.body;
+app.post("/token", requireAllowedOrigin, async (req, res) => {
+  const refreshToken = req.cookies.refreshToken;
   if (!refreshToken) return res.sendStatus(401);
 
   try {
-    // find user that has this refresh token
-    const user = await User.findOne({ refreshTokens: refreshToken });
-    if (!user) return res.sendStatus(403);
+    const payload = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
+    const oldDigest = tokenDigest(refreshToken);
+    const user = await User.findOne({ refreshTokens: oldDigest });
+    if (!user) {
+      res.clearCookie("refreshToken", refreshCookieOptions);
+      return res.sendStatus(403);
+    }
 
-    jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, payload) => {
-      if (err) return res.sendStatus(403);
-      const accessToken = generateAccessToken({ fullName: payload.fullName, email: payload.email });
-      res.json({ accessToken });
-    });
+    const userPayload = { fullName: payload.fullName, email: payload.email };
+    const nextRefreshToken = generateRefreshToken(userPayload);
+    const rotatedUser = await User.findOneAndUpdate(
+      { _id: user._id, refreshTokens: oldDigest },
+      { $set: { "refreshTokens.$": tokenDigest(nextRefreshToken) } },
+      { new: true }
+    );
+    if (!rotatedUser) {
+      res.clearCookie("refreshToken", refreshCookieOptions);
+      return res.sendStatus(403);
+    }
+
+    res.cookie("refreshToken", nextRefreshToken, refreshCookieOptions);
+    res.json({ accessToken: generateAccessToken(userPayload) });
   } catch (err) {
+    if (err.name === "TokenExpiredError" || err.name === "JsonWebTokenError") {
+      res.clearCookie("refreshToken", refreshCookieOptions);
+      return res.sendStatus(403);
+    }
     console.error(err);
     res.sendStatus(500);
   }
 });
 
-// --- Logout ---
-app.delete("/logout", async (req, res) => {
-  const { token: refreshToken } = req.body;
-
+app.delete("/logout", requireAllowedOrigin, async (req, res) => {
+  const refreshToken = req.cookies.refreshToken;
   try {
-    const user = await User.findOne({ refreshTokens: refreshToken });
-    if (!user) return res.sendStatus(204);
-
-    // remove the refresh token
-    user.refreshTokens = user.refreshTokens.filter(t => t !== refreshToken);
-    await user.save();
-
+    if (refreshToken) {
+      await User.findOneAndUpdate(
+        { refreshTokens: tokenDigest(refreshToken) },
+        { $pull: { refreshTokens: tokenDigest(refreshToken) } }
+      );
+    }
+    res.clearCookie("refreshToken", refreshCookieOptions);
     res.sendStatus(204);
   } catch (err) {
     console.error(err);

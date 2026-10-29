@@ -2,7 +2,7 @@ import React, { useContext } from "react";
 import Button from "../Button";
 import Navbar from "../Navbar";
 import { Link, useNavigate } from "react-router-dom";
-import { AuthContext } from "../AuthContext/AuthContext";
+import { AuthContext } from "../AuthContext/AuthContextValue";
 import userIcon from "../../assets/icons/user.png";
 import eventIcon from "../../assets/icons/event.png";
 import styles from "./Header.module.css";
@@ -46,8 +46,8 @@ const Header: React.FC = () => {
                         <Button
                             style={{ padding: "4px 12px", minWidth: "auto" }}
                             variant="secondary" size="md" 
-                            onClick={() => {
-                                logout();
+                            onClick={async () => {
+                                await logout();
                                 navigate("/");
                             }}
                         >

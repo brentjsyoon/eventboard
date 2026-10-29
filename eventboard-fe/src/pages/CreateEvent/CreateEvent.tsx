@@ -37,9 +37,10 @@ const CreateEvent: React.FC = () => {
       setLocation("");
       setDescription("");
       navigate("/");
-    } catch (err: any) {
+    } catch (err) {
       console.error(err);
-      alert(`❌ Failed to create event: ${err.message}`);
+      const message = err instanceof Error ? err.message : "Unexpected error";
+      alert(`❌ Failed to create event: ${message}`);
     }
   };
 
@@ -88,6 +89,7 @@ const CreateEvent: React.FC = () => {
                 className={`${styles.input} ${styles.textarea}`}
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
+                  required
               />
             </div>
 

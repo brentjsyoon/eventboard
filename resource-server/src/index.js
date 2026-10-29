@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const { rateLimit } = require("express-rate-limit");
 const connectDB = require('./db');
 const authenticateToken = require('./middleware/authenticateToken');
 const eventRoutes = require('./routes/events');
@@ -8,19 +9,20 @@ const bookingRoutes =require('./routes/bookings');
 
 const PORT = process.env.PORT || 3000;
 const app = express();
+app.set("trust proxy", 1);
+if (!process.env.MONGO_URI || !process.env.ACCESS_TOKEN_SECRET || !process.env.CLIENT_URL) {
+  throw new Error("MONGO_URI, ACCESS_TOKEN_SECRET, and CLIENT_URL must be configured");
+}
 
 app.get("/health", (req, res) => {
   res.status(200).json({ status: "ok" });
 });
 
-const https = require("https");
-
-https.get("https://checkip.amazonaws.com", (res) => {
-  let ip = "";
-  res.on("data", (chunk) => ip += chunk);
-  res.on("end", () => console.log("🌐 ECS outbound IP:", ip.trim()));
-}).on("error", (err) => {
-  console.error("Outbound IP check failed:", err.message);
+app.get("/ready", (req, res) => {
+  if (require("mongoose").connection.readyState !== 1) {
+    return res.status(503).json({ status: "not ready" });
+  }
+  res.status(200).json({ status: "ready" });
 });
 
 connectDB();
@@ -28,24 +30,24 @@ connectDB();
 const allowedOrigins = [
   process.env.CLIENT_URL,
   "http://localhost:5173"
-];
+].filter(Boolean);
 app.use(cors({
   origin: function (origin, callback) {
-    console.log("Request Origin:", origin);
-    if (!origin || allowedOrigins.includes(origin)) {
-      console.log("✅ Allowed by CORS:", origin);
-      callback(null, true);
-    } else {
-      console.log("❌ Blocked by CORS:", origin);
-      callback(new Error("Not allowed by CORS"));
-    }
+    if (!origin || allowedOrigins.includes(origin)) return callback(null, true);
+    callback(new Error("Not allowed by CORS"));
   },
   credentials: true,
   allowedHeaders: ["Content-Type", "Authorization"],
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
 }));
 
-app.use(express.json());
+app.use(express.json({ limit: "10kb" }));
+app.use(rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 300,
+  standardHeaders: "draft-8",
+  legacyHeaders: false,
+}));
 
 
 // Public route

@@ -16,20 +16,12 @@ const Contact: React.FC = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setStatus("Sending...");
-
-    try {
-      // In production: send to backend or email service (e.g. Nodemailer, Formspree)
-      console.log("Form submitted:", formData);
-
-      setFormData({ name: "", email: "", message: "" });
-      setStatus("✅ Message sent successfully!");
-    } catch (err) {
-      console.error(err);
-      setStatus("❌ Failed to send message. Please try again.");
-    }
+    const subject = encodeURIComponent(`EventBoard contact from ${formData.name}`);
+    const body = encodeURIComponent(`From: ${formData.name} (${formData.email})\n\n${formData.message}`);
+    window.location.href = `mailto:support@eventboard.com?subject=${subject}&body=${body}`;
+    setStatus("Your email app should open with this message. It has not been sent by this site.");
   };
 
   return (

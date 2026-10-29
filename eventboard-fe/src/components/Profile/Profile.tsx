@@ -1,11 +1,18 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import styles from "./Profile.module.css";
 import Button from "../Button";
 import { Link } from "react-router-dom";
+import { AuthContext } from "../AuthContext/AuthContextValue";
+
+type UserProfile = {
+    fullName: string;
+    email: string;
+};
 
 const Profile: React.FC = () => {
-    const [user, setUser] = useState<any>(null);
+    const [user, setUser] = useState<UserProfile | null>(null);
     const [loading, setLoading] = useState(true);
+    const { logout } = useContext(AuthContext);
 
     useEffect(() => {
         const fetchProfile = async () => {
@@ -21,7 +28,7 @@ const Profile: React.FC = () => {
             });
 
             if (!res.ok) throw new Error("Failed to load profile");
-            const data = await res.json();
+            const data: { user: UserProfile } = await res.json();
             setUser(data.user);
         } catch (err) {
             console.error("❌ Error fetching profile:", err);
@@ -61,9 +68,9 @@ const Profile: React.FC = () => {
                 variant="secondary"
                 size="md"
                 onClick={() => {
-                localStorage.removeItem("accessToken");
-                localStorage.removeItem("refreshToken");
-                window.location.href = "/";
+                void logout().then(() => {
+                    window.location.href = "/";
+                });
                 }}>
                     Logout
                 </Button>

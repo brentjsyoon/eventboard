@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Tabs from "../Tabs/Tabs";
 import LoginForm from "../LoginForm/LoginForm";
 import SignUpForm from "../SignUpForm/SignUpForm";
-import { AuthContext } from "../AuthContext/AuthContext";
+import { AuthContext } from "../AuthContext/AuthContextValue";
 import styles from "./AuthContainer.module.css";
 
 const AuthContainer: React.FC = () => {
@@ -19,13 +19,11 @@ const AuthContainer: React.FC = () => {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data),
+                credentials: "include",
             });
 
-            if (!res.ok) throw new Error("Login failed");
-            const { accessToken, refreshToken } = await res.json();
-
-            // store tokens in localStorage (or cookies if you want more security)
-            localStorage.setItem("refreshToken", refreshToken);
+            if (!res.ok) throw new Error((await res.json()).error || "Login failed");
+            const { accessToken } = await res.json();
 
             login(accessToken);
 
@@ -44,7 +42,7 @@ const AuthContainer: React.FC = () => {
                 body: JSON.stringify(data),
             });
 
-            if (!res.ok) throw new Error("Signup failed");
+            if (!res.ok) throw new Error((await res.json()).error || "Signup failed");
             setActiveTab("login");
         } catch (err) {
             console.error(err);

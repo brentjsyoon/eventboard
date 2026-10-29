@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import { AuthContext } from "../../components/AuthContext/AuthContext";
+import { AuthContext } from "../../components/AuthContext/AuthContextValue";
 import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer";
 import styles from "./MyBookings.module.css";
